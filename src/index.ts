@@ -1,13 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import express, { Request } from 'express';
+import express from 'express';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
 import { fetchTrades } from './fetchTrades';
 
 createConnection().then(async (db) => {
-  console.log('connected');
-
   const app = express();
   app.use(express.json(), cors());
 

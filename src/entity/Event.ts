@@ -2,7 +2,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index,
   ManyToOne,
   JoinColumn,
   PrimaryColumn,
@@ -10,7 +9,6 @@ import {
 import Owner from './Owner';
 
 @Entity()
-// @Index(['address', 'openOrders', 'programId'])
 export default class Event {
   @PrimaryGeneratedColumn()
   id: string;
