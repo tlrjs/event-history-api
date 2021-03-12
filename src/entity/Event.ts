@@ -13,7 +13,7 @@ export default class Event {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @PrimaryColumn('timestamp')
+  @PrimaryColumn('timestamptz')
   loadTimestamp: string;
 
   @Column()

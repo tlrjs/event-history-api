@@ -14,6 +14,6 @@ export default class StringEvent {
   @Column()
   raw_event: string;
 
-  @PrimaryColumn('timestamp')
+  @PrimaryColumn('timestamptz')
   loadTimestamp: string;
 }

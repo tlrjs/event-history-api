@@ -19,10 +19,11 @@ const fetchTradesByOwner = async (walletAddress: string, page: string) => {
         walletAddress,
       }
     )
-    .where('event.fill = TRUE')
     .skip(offSet)
     .take(20)
     .getMany();
+
+  if (results.length === 0) return;
 
   const uniqCurrencies = [...new Set(results.map((e) => [e.baseCurrency, e.quoteCurrency]).flat())];
   const currencyMeta = await currencyMetaRepo
@@ -42,11 +43,12 @@ const fetchTradesByOpenOrders = async (address: string, page: string) => {
 
   const results = await eventRepo
     .createQueryBuilder('event')
-    .where('event.fill = TRUE')
-    .andWhere('event.openOrders = :address', { address })
+    .where('event.openOrders = :address', { address })
     .skip(offSet)
     .take(20)
     .getMany();
+
+  if (results.length === 0) return [];
 
   const uniqCurrencies = [...new Set(results.map((e) => [e.baseCurrency, e.quoteCurrency]).flat())];
   const currencyMeta = await currencyMetaRepo
