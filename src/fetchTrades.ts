@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { getRepository } from 'typeorm';
 import { SerumEvent, Owner } from './entity';
 
-const fetchTrades = async (walletAddress: string, page: string) => {
+const fetchTradesByOwner = async (walletAddress: string, page: string) => {
   const perPage: number = 20;
   const offSet = parseInt(page) ? (parseInt(page) - 1) * perPage : 0;
   const eventRepo = getRepository(SerumEvent);
@@ -21,4 +21,18 @@ const fetchTrades = async (walletAddress: string, page: string) => {
     .getMany();
 };
 
-export { fetchTrades };
+const fetchTradesByOpenOrders = async (address: string, page: string) => {
+  const perPage: number = 20;
+  const offSet = parseInt(page) ? (parseInt(page) - 1) * perPage : 0;
+  const eventRepo = getRepository(SerumEvent);
+
+  return await eventRepo
+    .createQueryBuilder('event')
+    .where('event.fill = TRUE')
+    .andWhere('event.openOrders = :address', { address })
+    .skip(offSet)
+    .take(20)
+    .getMany();
+};
+
+export { fetchTradesByOwner, fetchTradesByOpenOrders };
