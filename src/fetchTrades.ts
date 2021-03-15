@@ -20,7 +20,7 @@ const fetchTradesByOwner = async (walletAddress: string, page: string) => {
       }
     )
     .skip(offSet)
-    .take(20)
+    .take(perPage)
     .getMany();
 
   if (results.length === 0) return;
@@ -45,7 +45,7 @@ const fetchTradesByOpenOrders = async (address: string, page: string) => {
     .createQueryBuilder('event')
     .where('event.openOrders = :address', { address })
     .skip(offSet)
-    .take(20)
+    .take(perPage)
     .getMany();
 
   if (results.length === 0) return [];
