@@ -63,8 +63,4 @@ export default class Event {
 
   @Column()
   clientOrderId: string;
-
-  @ManyToOne(() => Owner)
-  @JoinColumn({ name: 'openOrders' })
-  owner: Owner;
 }

@@ -7,7 +7,4 @@ export default class Owner {
 
   @Column()
   owner: string;
-
-  @OneToMany(() => SerumEvent, (event) => event.openOrders)
-  events: SerumEvent[];
 }
