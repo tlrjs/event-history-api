@@ -1,14 +1,7 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  PrimaryColumn,
-} from 'typeorm';
-import Owner from './Owner';
+import { Entity, PrimaryGeneratedColumn, Column, Index, PrimaryColumn } from 'typeorm';
 
 @Entity()
+@Index(['openOrders', 'loadTimestamp'])
 export default class Event {
   @PrimaryGeneratedColumn()
   id: string;
@@ -63,4 +56,10 @@ export default class Event {
 
   @Column()
   clientOrderId: string;
+
+  @Column()
+  uuid: string;
+
+  @Column()
+  source: number;
 }
