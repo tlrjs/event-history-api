@@ -37,7 +37,7 @@ const fetchTradesByOwner = async (walletAddress: string, page: string) => {
 };
 
 const fetchTradesByOpenOrders = async (address: string, page: string) => {
-  const perPage: number = 20;
+  const perPage: number = 100;
   const offSet = parseInt(page) ? (parseInt(page) - 1) * perPage : 0;
   const eventRepo = getRepository(SerumEvent);
   const currencyMetaRepo = getRepository(CurrencyMeta);
