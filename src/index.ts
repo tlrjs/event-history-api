@@ -3,7 +3,14 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
+import Airbrake from '@airbrake/node';
 import { fetchTradesByOwner, fetchTradesByOpenOrders } from './fetchTrades';
+
+new Airbrake.Notifier({
+  projectId: 328958,
+  projectKey: 'f853a43ca28598a71f135a84848368d5',
+  environment: 'production',
+});
 
 createConnection().then(async (db) => {
   const app = express();
