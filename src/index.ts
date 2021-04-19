@@ -2,18 +2,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import cors from 'cors';
-import * as Sentry from '@sentry/node';
 import { createConnection } from 'typeorm';
 import { fetchTradesByOwner, fetchTradesByOpenOrders } from './fetchTrades';
 
-Sentry.init({
-  dsn: 'https://68333cb984fc43caa598b6a86da05f01@o568322.ingest.sentry.io/5713285',
-});
+const rateLimit = require('express-rate-limit');
 
 createConnection().then(async (db) => {
   const app = express();
 
-  app.use(Sentry.Handlers.requestHandler());
+  const limiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 60, // limit each IP to 60 requests per windowMs
+  });
+
+  //  apply to all requests
+  app.use(limiter);
   app.use(express.json(), cors());
 
   app.get('/trades/owner/:ownerAddress', async (req, res) => {
@@ -43,8 +46,6 @@ createConnection().then(async (db) => {
       res.status(500).send({ message: 'error', error });
     }
   });
-
-  app.use(Sentry.Handlers.errorHandler());
 
   app.listen(process.env.PORT, () =>
     console.log(`Server listening at http://localhost:${process.env.PORT}`)
