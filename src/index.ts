@@ -12,10 +12,11 @@ createConnection().then(async (db) => {
 
   const limiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute
-    max: 60, // limit each IP to 60 requests per windowMs
+    max: 30, // limit each IP to 60 requests per windowMs
   });
 
   //  apply to all requests
+  app.set('trust proxy', 1);
   app.use(limiter);
   app.use(express.json(), cors());
 
