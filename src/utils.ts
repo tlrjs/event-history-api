@@ -16,7 +16,7 @@ export const parseFillEvent = (event, currencyMeta) => {
     (c) => c.currency === event.baseCurrency
   ).MintDecimals;
   event.quoteTokenDecimals = currencyMeta.find(
-    (c) => c.currency === event.baseCurrency
+    (c) => c.currency === event.quoteCurrency
   ).MintDecimals;
 
   const nativeQuantityPaid = new BN(event.nativeQuantityPaid);
@@ -31,8 +31,8 @@ export const parseFillEvent = (event, currencyMeta) => {
       ? nativeQuantityPaid.add(nativeFeeOrRebate)
       : nativeQuantityPaid.sub(nativeFeeOrRebate);
     price = divideBnToNumber(
-      priceBeforeFees.mul(tokenMultiplier(event.quoteTokenDecimals)),
-      tokenMultiplier(event.baseTokenDecimals).mul(nativeQuantityReleased)
+      priceBeforeFees.mul(tokenMultiplier(event.baseTokenDecimals)),
+      tokenMultiplier(event.quoteTokenDecimals).mul(nativeQuantityReleased)
     );
     size = divideBnToNumber(nativeQuantityReleased, tokenMultiplier(event.baseTokenDecimals));
   } else {
