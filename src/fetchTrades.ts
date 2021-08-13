@@ -3,9 +3,7 @@ import { getRepository } from 'typeorm';
 import { CurrencyMeta, SerumEvent, Owner, PerpEvent, PerpLiquidationEvent } from './entity';
 import { parseFillEvent } from './utils';
 
-const fetchPerpTradesByOwner = async (address: string, page: string) => {
-  // fetch MangoAccount and get PerpAccounts
-
+export const fetchPerpTradesByOwner = async (address: string) => {
   const fillEvents = await getRepository(PerpEvent)
     .createQueryBuilder()
     .where('perp_event.maker = :address', { address })
@@ -21,7 +19,7 @@ const fetchPerpTradesByOwner = async (address: string, page: string) => {
   return [...fillEvents, liquidateEvents];
 };
 
-const fetchTradesByOpenOrders = async (address: string, page: string) => {
+export const fetchTradesByOpenOrders = async (address: string, page: string) => {
   const perPage: number = 100;
   const offSet = parseInt(page) ? (parseInt(page) - 1) * perPage : 0;
 
@@ -44,5 +42,3 @@ const fetchTradesByOpenOrders = async (address: string, page: string) => {
 
   return results.map((event) => parseFillEvent(event, currencyMeta));
 };
-
-export { fetchPerpTradesByOwner, fetchTradesByOpenOrders };
