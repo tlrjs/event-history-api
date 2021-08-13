@@ -1,48 +1,31 @@
 import 'reflect-metadata';
 import { getRepository } from 'typeorm';
-import { CurrencyMeta, SerumEvent, Owner } from './entity';
+import { CurrencyMeta, SerumEvent, Owner, PerpEvent, PerpLiquidationEvent } from './entity';
 import { parseFillEvent } from './utils';
 
-const fetchTradesByOwner = async (walletAddress: string, page: string) => {
-  const perPage: number = 200;
-  const offSet = parseInt(page) ? (parseInt(page) - 1) * perPage : 0;
-  const eventRepo = getRepository(SerumEvent);
-  const currencyMetaRepo = getRepository(CurrencyMeta);
+const fetchPerpTradesByOwner = async (address: string, page: string) => {
+  // fetch MangoAccount and get PerpAccounts
 
-  const results = await eventRepo
-    .createQueryBuilder('event')
-    .innerJoinAndSelect(
-      Owner,
-      'owner',
-      'owner.openOrders = event.openOrders AND owner.owner = :walletAddress',
-      {
-        walletAddress,
-      }
-    )
-    .distinctOn(['event.uuid'])
-    .skip(offSet)
-    .take(perPage)
+  const fillEvents = await getRepository(PerpEvent)
+    .createQueryBuilder()
+    .where('perp_event.maker = :address', { address })
+    .orWhere('perp_event.taker = :address', { address })
     .getMany();
 
-  if (results.length === 0) return;
-
-  const uniqCurrencies = [...new Set(results.map((e) => [e.baseCurrency, e.quoteCurrency]).flat())];
-  const currencyMeta = await currencyMetaRepo
-    .createQueryBuilder('currency_meta')
-    .where('currency_meta.currency IN (:...currencies)', { currencies: uniqCurrencies })
-    .distinctOn(['currency_meta.currency'])
+  const liquidateEvents = await getRepository(PerpLiquidationEvent)
+    .createQueryBuilder()
+    .where('perp_liquidation_event.liqee = :address', { address })
+    .orWhere('perp_liquidation_event.liqor = :address', { address })
     .getMany();
 
-  return results.map((event) => parseFillEvent(event, currencyMeta));
+  return [...fillEvents, liquidateEvents];
 };
 
 const fetchTradesByOpenOrders = async (address: string, page: string) => {
   const perPage: number = 100;
   const offSet = parseInt(page) ? (parseInt(page) - 1) * perPage : 0;
-  const eventRepo = getRepository(SerumEvent);
-  const currencyMetaRepo = getRepository(CurrencyMeta);
 
-  const results = await eventRepo
+  const results = await getRepository(SerumEvent)
     .createQueryBuilder('event')
     .where('event.openOrders = :address', { address })
     .distinctOn(['event.uuid'])
@@ -53,7 +36,7 @@ const fetchTradesByOpenOrders = async (address: string, page: string) => {
   if (results.length === 0) return [];
 
   const uniqCurrencies = [...new Set(results.map((e) => [e.baseCurrency, e.quoteCurrency]).flat())];
-  const currencyMeta = await currencyMetaRepo
+  const currencyMeta = await getRepository(CurrencyMeta)
     .createQueryBuilder('currency_meta')
     .where('currency_meta.currency IN (:...currencies)', { currencies: uniqCurrencies })
     .distinctOn(['currency_meta.currency'])
@@ -62,4 +45,4 @@ const fetchTradesByOpenOrders = async (address: string, page: string) => {
   return results.map((event) => parseFillEvent(event, currencyMeta));
 };
 
-export { fetchTradesByOwner, fetchTradesByOpenOrders };
+export { fetchPerpTradesByOwner, fetchTradesByOpenOrders };

@@ -1,5 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
-import SerumEvent from './Event';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity()
 export default class Owner {
   @PrimaryColumn()

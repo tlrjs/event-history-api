@@ -3,7 +3,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
-import { fetchTradesByOwner, fetchTradesByOpenOrders } from './fetchTrades';
+import { fetchPerpTradesByOwner, fetchTradesByOpenOrders } from './fetchTrades';
 
 const rateLimit = require('express-rate-limit');
 
@@ -20,11 +20,10 @@ createConnection().then(async (db) => {
   app.use(limiter);
   app.use(express.json(), cors());
 
-  app.get('/trades/owner/:ownerAddress', async (req, res) => {
+  app.get('/perp_trades/:mangoAccountAddress', async (req, res) => {
     try {
-      const ownerAddress = req.params.ownerAddress as string;
-      const page = req.query.page as string;
-      const results = await fetchTradesByOwner(ownerAddress, page);
+      const mangoAccountAddress = req.params.mangoAccountAddress as string;
+      const results = await fetchPerpTradesByOwner(mangoAccountAddress);
 
       res.send({ success: true, data: results });
     } catch (error) {

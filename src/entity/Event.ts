@@ -1,11 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, PrimaryColumn } from 'typeorm';
+import { Entity, Column, Index, PrimaryColumn } from 'typeorm';
 
 @Entity()
-@Index(['openOrders', 'loadTimestamp'])
 export default class Event {
-  @PrimaryGeneratedColumn()
-  id: string;
-
   @PrimaryColumn('timestamptz')
   loadTimestamp: string;
 
@@ -62,4 +58,7 @@ export default class Event {
 
   @Column()
   source: number;
+
+  @Column()
+  seqNum: number;
 }
