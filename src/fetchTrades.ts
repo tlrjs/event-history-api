@@ -5,13 +5,13 @@ import { parseFillEvent } from './utils';
 
 export const fetchPerpTradesByOwner = async (address: string) => {
   const fillEvents = await getRepository(PerpEvent)
-    .createQueryBuilder()
+    .createQueryBuilder('perp_event')
     .where('perp_event.maker = :address', { address })
     .orWhere('perp_event.taker = :address', { address })
     .getMany();
 
   const liquidateEvents = await getRepository(PerpLiquidationEvent)
-    .createQueryBuilder()
+    .createQueryBuilder('perp_liquidation_event')
     .where('perp_liquidation_event.liqee = :address', { address })
     .orWhere('perp_liquidation_event.liqor = :address', { address })
     .getMany();
